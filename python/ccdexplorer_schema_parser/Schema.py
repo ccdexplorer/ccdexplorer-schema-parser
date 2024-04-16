@@ -1,4 +1,4 @@
-from Parser import parser
+from ccdexplorer_schema_parser import ccdexplorer_schema_parser
 import json
 
 
@@ -12,16 +12,20 @@ class Schema:
 
         """
         if version is not None:
-            self.schema = parser.extract_schema_pair_ffi(version, source)
+            self.schema = ccdexplorer_schema_parser.extract_schema_pair_ffi(
+                version, source
+            )
         else:
-            self.schema = parser.extract_schema_ffi(source)
+            self.schema = ccdexplorer_schema_parser.extract_schema_ffi(source)
 
     def event_to_json(self, contractName, eventData):
-        response = parser.parse_event_ffi(self.schema, contractName, eventData)
+        response = ccdexplorer_schema_parser.parse_event_ffi(
+            self.schema, contractName, eventData
+        )
         return json.loads(response)
 
     def return_value_to_json(self, contractName, functionName, returnValueData):
-        response = parser.parse_return_value_ffi(
+        response = ccdexplorer_schema_parser.parse_return_value_ffi(
             self.schema, contractName, functionName, returnValueData
         )
         return json.loads(response)
