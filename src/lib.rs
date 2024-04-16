@@ -7,7 +7,7 @@ use pyo3::{exceptions::*, prelude::*};
 
 /// A Python module implemented in Rust.
 #[pymodule]
-fn schema_parsing(_py: Python, m: &PyModule) -> PyResult<()> {
+fn ccdexplorer_schema_parser(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(extract_schema_ffi, m)?)?;
     m.add_function(wrap_pyfunction!(extract_schema_pair_ffi, m)?)?;
     m.add_function(wrap_pyfunction!(parse_event_ffi, m)?)?;

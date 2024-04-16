@@ -10,7 +10,7 @@ We've tested with Rust 1.74.
 The Rust bindings are in `src/lib.rs`. They are simple exports of functionality
 from `concordium-contracts-common`.
 
-The entrypoint for Python consumers is the `schema_parsing` package which has a
+The entrypoint for Python consumers is the `ccdexplorer_schema_parser` package which has a
 single class `Schema`. The constructor will instantiate the schema from a
 deployed Wasm module.
 
