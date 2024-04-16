@@ -94,7 +94,7 @@ jobs:
     environment: pypi
     permissions:
       id-token: write
-    needs: [sdist]
+    needs: [linux, macos, sdist]
     steps:
       - uses: actions/download-artifact@v4
       - name: Publish to PyPI
