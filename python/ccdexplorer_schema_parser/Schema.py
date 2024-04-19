@@ -24,6 +24,12 @@ class Schema:
         )
         return json.loads(response)
 
+    def parameter_to_json(self, contractName, parameterData):
+        response = ccdexplorer_schema_parser.parse_parameter_ffi(
+            self.schema, contractName, parameterData
+        )
+        return json.loads(response)
+
     def return_value_to_json(self, contractName, functionName, returnValueData):
         response = ccdexplorer_schema_parser.parse_return_value_ffi(
             self.schema, contractName, functionName, returnValueData
