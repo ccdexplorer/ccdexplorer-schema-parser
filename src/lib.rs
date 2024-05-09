@@ -10,6 +10,7 @@ use pyo3::{exceptions::*, prelude::*};
 fn ccdexplorer_schema_parser(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(extract_schema_ffi, m)?)?;
     m.add_function(wrap_pyfunction!(extract_schema_pair_ffi, m)?)?;
+    m.add_function(wrap_pyfunction!(schema_to_json, m)?)?;
     m.add_function(wrap_pyfunction!(parse_event_ffi, m)?)?;
     m.add_function(wrap_pyfunction!(parse_return_value_ffi, m)?)?;
     m.add_function(wrap_pyfunction!(parse_parameter_ffi, m)?)?;
@@ -62,6 +63,29 @@ fn extract_schema_pair_ffi(module_version: u8, module_source: Vec<u8>) -> PyResu
         }
     };
     Ok(to_bytes(&schema))
+}
+
+#[pyfunction]
+fn schema_to_json(
+    versioned_module_schema: Vec<u8>,
+    contract_name: &str,
+    event_data: Vec<u8>,
+) -> PyResult<String> {
+    let schema: VersionedModuleSchema = match from_bytes(&versioned_module_schema) {
+        Ok(s) => s,
+        Err(e) => {
+            return Err(PyValueError::new_err(format!(
+                "Unable to parse schema: {e}"
+            )))
+        }
+    };
+    match schema.get_event_schema(contract_name) {
+        Ok(s) => match s.to_json_template() {
+            Ok(v) => Ok(v),
+            Err(e) => Err(PyValueError::new_err(format!("Unable to output schema to json"))),
+        },
+        Err(e) => Err(PyValueError::new_err(format!(""))),
+    }
 }
 
 #[pyfunction]
