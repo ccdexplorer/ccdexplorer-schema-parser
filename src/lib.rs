@@ -11,6 +11,21 @@ fn ccdexplorer_schema_parser(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(extract_schema_ffi, m)?)?;
     m.add_function(wrap_pyfunction!(extract_schema_pair_ffi, m)?)?;
     m.add_function(wrap_pyfunction!(extract_event_schema_template_ffi, m)?)?;
+    m.add_function(wrap_pyfunction!(extract_init_error_schema_template_ffi, m)?)?;
+    m.add_function(wrap_pyfunction!(extract_init_param_schema_template_ffi, m)?)?;
+    m.add_function(wrap_pyfunction!(
+        extract_receive_error_schema_template_ffi,
+        m
+    )?)?;
+    m.add_function(wrap_pyfunction!(
+        extract_receive_param_schema_template_ffi,
+        m
+    )?)?;
+    m.add_function(wrap_pyfunction!(
+        extract_receive_return_value_schema_template_ffi,
+        m
+    )?)?;
+    m.add_function(wrap_pyfunction!(extract_event_schema_template_ffi, m)?)?;
     m.add_function(wrap_pyfunction!(parse_event_ffi, m)?)?;
     m.add_function(wrap_pyfunction!(parse_return_value_ffi, m)?)?;
     m.add_function(wrap_pyfunction!(parse_parameter_ffi, m)?)?;
@@ -82,12 +97,105 @@ fn extract_event_schema_template_ffi(
     let schema = get_schema(versioned_module_schema)?;
 
     match schema.get_event_schema(contract_name) {
-        Ok(s) => {
-            let template = s.to_json_template();
+        Ok(t) => {
+            let template = t.to_json_template();
             Ok(template.to_string())
         }
         Err(e) => Err(PyValueError::new_err(format!(
-            "Unable to get event schema from the module: {e}"
+            "Unable to get event template from the schema: {e}"
+        ))),
+    }
+}
+
+#[pyfunction]
+fn extract_init_error_schema_template_ffi(
+    versioned_module_schema: Vec<u8>,
+    contract_name: &str,
+) -> PyResult<String> {
+    let schema = get_schema(versioned_module_schema)?;
+
+    match schema.get_init_error_schema(contract_name) {
+        Ok(t) => {
+            let template = t.to_json_template();
+            Ok(template.to_string())
+        }
+        Err(e) => Err(PyValueError::new_err(format!(
+            "Unable to get init_error template from the schema: {e}"
+        ))),
+    }
+}
+
+#[pyfunction]
+fn extract_init_param_schema_template_ffi(
+    versioned_module_schema: Vec<u8>,
+    contract_name: &str,
+) -> PyResult<String> {
+    let schema = get_schema(versioned_module_schema)?;
+
+    match schema.get_init_param_schema(contract_name) {
+        Ok(t) => {
+            let template = t.to_json_template();
+            Ok(template.to_string())
+        }
+        Err(e) => Err(PyValueError::new_err(format!(
+            "Unable to get init_param template from the schema: {e}"
+        ))),
+    }
+}
+
+#[pyfunction]
+fn extract_receive_error_schema_template_ffi(
+    versioned_module_schema: Vec<u8>,
+    contract_name: &str,
+    function_name: &str,
+) -> PyResult<String> {
+    let schema = get_schema(versioned_module_schema)?;
+
+    match schema.get_receive_error_schema(contract_name, function_name) {
+        Ok(t) => {
+            let template = t.to_json_template();
+            Ok(template.to_string())
+        }
+        Err(e) => Err(PyValueError::new_err(format!(
+            "Unable to get receive_error template from the schema: {e}"
+        ))),
+    }
+}
+
+#[pyfunction]
+fn extract_receive_param_schema_template_ffi(
+    versioned_module_schema: Vec<u8>,
+    contract_name: &str,
+    function_name: &str,
+) -> PyResult<String> {
+    let schema = get_schema(versioned_module_schema)?;
+
+    match schema.get_receive_param_schema(contract_name, function_name) {
+        Ok(t) => {
+            let template = t.to_json_template();
+            Ok(template.to_string())
+        }
+        Err(e) => Err(PyValueError::new_err(format!(
+            "Unable to get receive_param template from the schema: {e}"
+        ))),
+    }
+}
+
+#[pyfunction]
+fn extract_receive_return_value_schema_template_ffi(
+    versioned_module_schema: Vec<u8>,
+    contract_name: &str,
+    function_name: &str,
+) -> PyResult<String> {
+    let schema = get_schema(versioned_module_schema)?;
+
+    match schema.get_receive_return_value_schema(contract_name, function_name) {
+        Ok(t) => {
+            let template = t.to_json_template();
+            Ok(template.to_string())
+        }
+        Err(e) => Err(PyValueError::new_err(format!(
+            "Unable to get receive_return_value template from the schema: {e}"
         ))),
     }
 }
