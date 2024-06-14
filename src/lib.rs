@@ -10,7 +10,23 @@ use pyo3::{exceptions::*, prelude::*};
 fn ccdexplorer_schema_parser(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(extract_schema_ffi, m)?)?;
     m.add_function(wrap_pyfunction!(extract_schema_pair_ffi, m)?)?;
-    m.add_function(wrap_pyfunction!(schema_to_json, m)?)?;
+    m.add_function(wrap_pyfunction!(extract_schema_template_ffi, m)?)?;
+    m.add_function(wrap_pyfunction!(extract_event_schema_template_ffi, m)?)?;
+    m.add_function(wrap_pyfunction!(extract_init_error_schema_template_ffi, m)?)?;
+    m.add_function(wrap_pyfunction!(extract_init_param_schema_template_ffi, m)?)?;
+    m.add_function(wrap_pyfunction!(
+        extract_receive_error_schema_template_ffi,
+        m
+    )?)?;
+    m.add_function(wrap_pyfunction!(
+        extract_receive_param_schema_template_ffi,
+        m
+    )?)?;
+    m.add_function(wrap_pyfunction!(
+        extract_receive_return_value_schema_template_ffi,
+        m
+    )?)?;
+    m.add_function(wrap_pyfunction!(extract_event_schema_template_ffi, m)?)?;
     m.add_function(wrap_pyfunction!(parse_event_ffi, m)?)?;
     m.add_function(wrap_pyfunction!(parse_return_value_ffi, m)?)?;
     m.add_function(wrap_pyfunction!(parse_parameter_ffi, m)?)?;
@@ -65,26 +81,160 @@ fn extract_schema_pair_ffi(module_version: u8, module_source: Vec<u8>) -> PyResu
     Ok(to_bytes(&schema))
 }
 
+fn get_schema(versioned_module_schema: Vec<u8>) -> PyResult<VersionedModuleSchema> {
+    match from_bytes::<VersionedModuleSchema>(&versioned_module_schema) {
+        Ok(s) => Ok(s),
+        Err(e) => Err(PyValueError::new_err(format!(
+            "Unable to parse schema: {e}"
+        ))),
+    }
+}
+
 #[pyfunction]
-fn schema_to_json(
+fn extract_schema_template_ffi(versioned_module_schema: Vec<u8>) -> PyResult<String> {
+    let schema = get_schema(versioned_module_schema)?;
+
+    Ok(schema.to_string())
+}
+
+#[pyfunction]
+fn extract_event_schema_template_ffi(
     versioned_module_schema: Vec<u8>,
     contract_name: &str,
-    event_data: Vec<u8>,
 ) -> PyResult<String> {
-    let schema: VersionedModuleSchema = match from_bytes(&versioned_module_schema) {
-        Ok(s) => s,
-        Err(e) => {
-            return Err(PyValueError::new_err(format!(
-                "Unable to parse schema: {e}"
-            )))
-        }
-    };
+    let schema = get_schema(versioned_module_schema)?;
+
     match schema.get_event_schema(contract_name) {
-        Ok(s) => match s.to_json_template() {
-            Ok(v) => Ok(v),
-            Err(e) => Err(PyValueError::new_err(format!("Unable to output schema to json"))),
-        },
-        Err(e) => Err(PyValueError::new_err(format!(""))),
+        Ok(t) => {
+            let template = t.to_json_template();
+
+            Ok(serde_json::to_string_pretty(&template).map_err(|e| {
+                PyValueError::new_err(format!(
+                    "Unable to display template in a pretty format. Original error: {e}"
+                ))
+            })?)
+        }
+        Err(e) => Err(PyValueError::new_err(format!(
+            "Unable to get event template from the schema: {e}"
+        ))),
+    }
+}
+
+#[pyfunction]
+fn extract_init_error_schema_template_ffi(
+    versioned_module_schema: Vec<u8>,
+    contract_name: &str,
+) -> PyResult<String> {
+    let schema = get_schema(versioned_module_schema)?;
+
+    match schema.get_init_error_schema(contract_name) {
+        Ok(t) => {
+            let template = t.to_json_template();
+
+            Ok(serde_json::to_string_pretty(&template).map_err(|e| {
+                PyValueError::new_err(format!(
+                    "Unable to display template in a pretty format. Original error: {e}"
+                ))
+            })?)
+        }
+        Err(e) => Err(PyValueError::new_err(format!(
+            "Unable to get init_error template from the schema: {e}"
+        ))),
+    }
+}
+
+#[pyfunction]
+fn extract_init_param_schema_template_ffi(
+    versioned_module_schema: Vec<u8>,
+    contract_name: &str,
+) -> PyResult<String> {
+    let schema = get_schema(versioned_module_schema)?;
+
+    match schema.get_init_param_schema(contract_name) {
+        Ok(t) => {
+            let template = t.to_json_template();
+
+            Ok(serde_json::to_string_pretty(&template).map_err(|e| {
+                PyValueError::new_err(format!(
+                    "Unable to display template in a pretty format. Original error: {e}"
+                ))
+            })?)
+        }
+        Err(e) => Err(PyValueError::new_err(format!(
+            "Unable to get init_param template from the schema: {e}"
+        ))),
+    }
+}
+
+#[pyfunction]
+fn extract_receive_error_schema_template_ffi(
+    versioned_module_schema: Vec<u8>,
+    contract_name: &str,
+    function_name: &str,
+) -> PyResult<String> {
+    let schema = get_schema(versioned_module_schema)?;
+
+    match schema.get_receive_error_schema(contract_name, function_name) {
+        Ok(t) => {
+            let template = t.to_json_template();
+
+            Ok(serde_json::to_string_pretty(&template).map_err(|e| {
+                PyValueError::new_err(format!(
+                    "Unable to display template in a pretty format. Original error: {e}"
+                ))
+            })?)
+        }
+        Err(e) => Err(PyValueError::new_err(format!(
+            "Unable to get receive_error template from the schema: {e}"
+        ))),
+    }
+}
+
+#[pyfunction]
+fn extract_receive_param_schema_template_ffi(
+    versioned_module_schema: Vec<u8>,
+    contract_name: &str,
+    function_name: &str,
+) -> PyResult<String> {
+    let schema = get_schema(versioned_module_schema)?;
+
+    match schema.get_receive_param_schema(contract_name, function_name) {
+        Ok(t) => {
+            let template = t.to_json_template();
+
+            Ok(serde_json::to_string_pretty(&template).map_err(|e| {
+                PyValueError::new_err(format!(
+                    "Unable to display template in a pretty format. Original error: {e}"
+                ))
+            })?)
+        }
+        Err(e) => Err(PyValueError::new_err(format!(
+            "Unable to get receive_param template from the schema: {e}"
+        ))),
+    }
+}
+
+#[pyfunction]
+fn extract_receive_return_value_schema_template_ffi(
+    versioned_module_schema: Vec<u8>,
+    contract_name: &str,
+    function_name: &str,
+) -> PyResult<String> {
+    let schema = get_schema(versioned_module_schema)?;
+
+    match schema.get_receive_return_value_schema(contract_name, function_name) {
+        Ok(t) => {
+            let template = t.to_json_template();
+
+            Ok(serde_json::to_string_pretty(&template).map_err(|e| {
+                PyValueError::new_err(format!(
+                    "Unable to display template in a pretty format. Original error: {e}"
+                ))
+            })?)
+        }
+        Err(e) => Err(PyValueError::new_err(format!(
+            "Unable to get receive_return_value template from the schema: {e}"
+        ))),
     }
 }
 
@@ -94,14 +244,8 @@ fn parse_event_ffi(
     contract_name: &str,
     event_data: Vec<u8>,
 ) -> PyResult<String> {
-    let schema: VersionedModuleSchema = match from_bytes(&versioned_module_schema) {
-        Ok(s) => s,
-        Err(e) => {
-            return Err(PyValueError::new_err(format!(
-                "Unable to parse schema: {e}"
-            )))
-        }
-    };
+    let schema = get_schema(versioned_module_schema)?;
+
     match schema.get_event_schema(contract_name) {
         Ok(s) => match s.to_json_string_pretty(&event_data) {
             Ok(v) => Ok(v),
@@ -118,14 +262,8 @@ fn parse_return_value_ffi(
     function_name: &str,
     return_value_data: Vec<u8>,
 ) -> PyResult<String> {
-    let schema: VersionedModuleSchema = match from_bytes(&versioned_module_schema) {
-        Ok(s) => s,
-        Err(e) => {
-            return Err(PyValueError::new_err(format!(
-                "Unable to parse schema: {e}"
-            )))
-        }
-    };
+    let schema = get_schema(versioned_module_schema)?;
+
     match schema.get_receive_return_value_schema(contract_name, function_name) {
         Ok(s) => match s.to_json_string_pretty(&return_value_data) {
             Ok(v) => Ok(v),
@@ -142,14 +280,8 @@ fn parse_parameter_ffi(
     function_name: &str,
     parameter_data: Vec<u8>,
 ) -> PyResult<String> {
-    let schema: VersionedModuleSchema = match from_bytes(&versioned_module_schema) {
-        Ok(s) => s,
-        Err(e) => {
-            return Err(PyValueError::new_err(format!(
-                "Unable to parse schema: {e}"
-            )))
-        }
-    };
+    let schema = get_schema(versioned_module_schema)?;
+
     match schema.get_receive_param_schema(contract_name, function_name) {
         Ok(s) => match s.to_json_string_pretty(&parameter_data) {
             Ok(v) => Ok(v),

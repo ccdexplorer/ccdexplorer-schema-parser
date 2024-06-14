@@ -26,7 +26,7 @@ versioned_module: VersionedModuleSource = (
         module_ref, "last_final", net=NET(net)
     )
 )
-schema = Schema(versioned_module.v1.value, 1) if versioned_module.v1 
+schema = Schema(versioned_module.v1.value, 1) if versioned_module.v1
     else Schema(versioned_module.v0.value, 0)
 ```
 
@@ -41,7 +41,9 @@ If this can be parsed, the result will be a dictionary.
 
 ## Building
 
-Run `maturin build`.
+Run `pip install -r requirements.txt` to install dependencies.
+
+Run `maturin build` to build the project.
 
 This will produce a python wheel in `target/wheels` that will contain both the
 compiled Rust binaries and python wrappers. The compiled package is platform
