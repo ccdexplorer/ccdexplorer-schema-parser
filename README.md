@@ -26,8 +26,7 @@ versioned_module: VersionedModuleSource = (
         module_ref, "last_final", net=NET(net)
     )
 )
-schema = Schema(versioned_module.v1.value, 1) if
-versioned_module.v1
+schema = Schema(versioned_module.v1.value, 1) if versioned_module.v1
     else Schema(versioned_module.v0.value, 0)
 ```
 
