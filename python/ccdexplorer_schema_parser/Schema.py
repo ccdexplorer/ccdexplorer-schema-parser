@@ -35,3 +35,62 @@ class Schema:
             self.schema, contractName, functionName, returnValueData
         )
         return json.loads(response)
+
+    def extract_schema(self):
+        response = ccdexplorer_schema_parser.extract_schema_template_ffi(self.schema)
+        return response
+
+    def extract_init_error_schema(self, contractName: str):
+        try:
+            response = ccdexplorer_schema_parser.extract_init_error_schema_template_ffi(
+                self.schema, contractName
+            )
+            return response
+        except ValueError:
+            return None
+
+    def extract_init_param_schema(self, contractName: str):
+        response = ccdexplorer_schema_parser.extract_init_param_schema_template_ffi(
+            self.schema, contractName
+        )
+        return response
+
+    def extract_receive_error_schema(self, contractName: str, functionName: str):
+        try:
+            response = (
+                ccdexplorer_schema_parser.extract_receive_error_schema_template_ffi(
+                    self.schema, contractName, functionName
+                )
+            )
+            return response
+        except ValueError:
+            return None
+
+    def extract_receive_param_schema(self, contractName: str, functionName: str):
+        try:
+            response = (
+                ccdexplorer_schema_parser.extract_receive_param_schema_template_ffi(
+                    self.schema, contractName, functionName
+                )
+            )
+            return response
+        except ValueError:
+            return None
+
+    def extract_receive_return_value_schema(self, contractName: str, functionName: str):
+        try:
+            response = ccdexplorer_schema_parser.extract_receive_return_value_schema_template_ffi(
+                self.schema, contractName, functionName
+            )
+            return response
+        except ValueError:
+            return None
+
+    def extract_event_schema(self, contractName: str):
+        try:
+            response = ccdexplorer_schema_parser.extract_event_schema_template_ffi(
+                self.schema, contractName
+            )
+            return response
+        except ValueError:
+            return None
