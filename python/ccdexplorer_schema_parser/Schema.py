@@ -25,16 +25,22 @@ class Schema:
                 self.schema = None
 
     def event_to_json(self, contractName, eventData):
-        response = ccdexplorer_schema_parser.parse_event_ffi(
-            self.schema, contractName, eventData
-        )
-        return json.loads(response)
+        try:
+            response = ccdexplorer_schema_parser.parse_event_ffi(
+                self.schema, contractName, eventData
+            )
+            return json.loads(response)
+        except TypeError:
+            return None
 
     def parameter_to_json(self, contractName, functionName, parameterData):
-        response = ccdexplorer_schema_parser.parse_parameter_ffi(
-            self.schema, contractName, functionName, parameterData
-        )
-        return json.loads(response)
+        try:
+            response = ccdexplorer_schema_parser.parse_parameter_ffi(
+                self.schema, contractName, functionName, parameterData
+            )
+            return json.loads(response)
+        except TypeError:
+            return None
 
     def return_value_to_json(self, contractName, functionName, returnValueData):
         response = ccdexplorer_schema_parser.parse_return_value_ffi(
