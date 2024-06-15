@@ -12,11 +12,17 @@ class Schema:
 
         """
         if version is not None:
-            self.schema = ccdexplorer_schema_parser.extract_schema_pair_ffi(
-                version, source
-            )
+            try:
+                self.schema = ccdexplorer_schema_parser.extract_schema_pair_ffi(
+                    version, source
+                )
+            except ValueError:
+                self.schema = None
         else:
-            self.schema = ccdexplorer_schema_parser.extract_schema_ffi(source)
+            try:
+                self.schema = ccdexplorer_schema_parser.extract_schema_ffi(source)
+            except ValueError:
+                self.schema = None
 
     def event_to_json(self, contractName, eventData):
         response = ccdexplorer_schema_parser.parse_event_ffi(
@@ -37,8 +43,13 @@ class Schema:
         return json.loads(response)
 
     def extract_schema(self):
-        response = ccdexplorer_schema_parser.extract_schema_template_ffi(self.schema)
-        return response
+        try:
+            response = ccdexplorer_schema_parser.extract_schema_template_ffi(
+                self.schema
+            )
+            return response
+        except ValueError:
+            return None
 
     def extract_init_error_schema(self, contractName: str):
         try:
@@ -50,10 +61,13 @@ class Schema:
             return None
 
     def extract_init_param_schema(self, contractName: str):
-        response = ccdexplorer_schema_parser.extract_init_param_schema_template_ffi(
-            self.schema, contractName
-        )
-        return response
+        try:
+            response = ccdexplorer_schema_parser.extract_init_param_schema_template_ffi(
+                self.schema, contractName
+            )
+            return response
+        except ValueError:
+            return None
 
     def extract_receive_error_schema(self, contractName: str, functionName: str):
         try:
