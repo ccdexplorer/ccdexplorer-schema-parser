@@ -94,7 +94,7 @@ fn get_schema(versioned_module_schema: Vec<u8>) -> PyResult<VersionedModuleSchem
 fn extract_schema_template_ffi(versioned_module_schema: Vec<u8>) -> PyResult<String> {
     let schema = get_schema(versioned_module_schema)?;
 
-    Ok(schema.to_string())
+    Ok(format!("{}", schema))
 }
 
 #[pyfunction]
