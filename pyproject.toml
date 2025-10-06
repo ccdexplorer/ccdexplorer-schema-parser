@@ -13,8 +13,7 @@ license         = { file = "LICENSE.md" }
 classifiers     = [ "Programming Language :: Python :: 3" ]
 
 [tool.maturin]
-# manylinux policy; keep 'auto' if you like
-manylinux = "auto"
+manylinux = "manylinux2014"
 # If you expose the module under the same name as the lib, you can omit module-name.
 # module-name = "ccdexplorer_schema_parser"
 features = [  ]
