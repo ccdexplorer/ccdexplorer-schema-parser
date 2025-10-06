@@ -3,7 +3,6 @@ name    = "ccdexplorer-schema-parser"
 version = "0.1.2"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
 name       = "ccdexplorer_schema_parser"
 crate-type = [ "cdylib" ]
@@ -12,6 +11,9 @@ crate-type = [ "cdylib" ]
 concordium-contracts-common      = { version = "9.1.0", features = [ "derive-serde" ] }
 concordium-smart-contract-engine = "5.0.0"
 concordium_base                  = "5.0.0"
-version                          = "0.22"
-features                         = [ "extension-module", "abi3", "abi3-py310" ]
 serde_json                       = "1.0.117"
+
+# ⬇️ THIS must be a nested table, not inline keys:
+[dependencies.pyo3]
+version  = "0.22"                                       # supports CPython 3.13
+features = [ "extension-module", "abi3", "abi3-py310" ]

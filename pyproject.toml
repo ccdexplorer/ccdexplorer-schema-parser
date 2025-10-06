@@ -1,16 +1,20 @@
 [build-system]
-requires = ["maturin>=1.5,<2.0"]
+requires      = [ "maturin>=1.6,<2" ]
 build-backend = "maturin"
 
 [project]
-name = "ccdexplorer-schema-parser"
-requires-python = ">=3.8"
-classifiers = [
-    "Programming Language :: Rust",
-    "Programming Language :: Python :: Implementation :: CPython",
-    "Programming Language :: Python :: Implementation :: PyPy",
-]
-dynamic = ["version"]
+name            = "ccdexplorer-schema-parser"
+version         = "0.1.2"
+requires-python = ">=3.10"
+description     = "Schema parser bindings"
+authors         = [ { name = "Sander de Ruiter" } ]
+readme          = "README.md"
+license         = { file = "LICENSE.md" }
+classifiers     = [ "Programming Language :: Python :: 3" ]
+
 [tool.maturin]
-features = ["pyo3/extension-module"]
-python-source = "python"
+# manylinux policy; keep 'auto' if you like
+manylinux = "auto"
+# If you expose the module under the same name as the lib, you can omit module-name.
+# module-name = "ccdexplorer_schema_parser"
+features = [  ]
