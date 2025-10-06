@@ -1,4 +1,4 @@
-from ccdexplorer_schema_parser import ccdexplorer_schema_parser
+from . import _native as ccdexplorer_schema_parser
 import json
 
 
