@@ -1,4 +1,4 @@
-from . import _native as ccdexplorer_schema_parser
+from . import _native as ccdexplorer_schema_parser  # type: ignore[attr-defined]
 import json
 
 
