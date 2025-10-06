@@ -1,35 +1,25 @@
 use concordium_base::smart_contracts::WasmModule;
-use concordium_contracts_common::{
-    from_bytes, schema::VersionedModuleSchema, to_bytes, WasmVersion,
-};
+use concordium_contracts_common::{from_bytes, schema::VersionedModuleSchema, to_bytes, WasmVersion};
 use concordium_smart_contract_engine::utils;
-use pyo3::{exceptions::*, prelude::*};
+use pyo3::exceptions::*;
+use pyo3::prelude::*;            // brings Python, PyResult, Bound, etc.
+use pyo3::types::PyModule;
 
-/// A Python module implemented in Rust.
 #[pymodule]
-fn ccdexplorer_schema_parser(_py: Python, m: &PyModule) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(extract_schema_ffi, m)?)?;
-    m.add_function(wrap_pyfunction!(extract_schema_pair_ffi, m)?)?;
-    m.add_function(wrap_pyfunction!(extract_schema_template_ffi, m)?)?;
-    m.add_function(wrap_pyfunction!(extract_event_schema_template_ffi, m)?)?;
-    m.add_function(wrap_pyfunction!(extract_init_error_schema_template_ffi, m)?)?;
-    m.add_function(wrap_pyfunction!(extract_init_param_schema_template_ffi, m)?)?;
-    m.add_function(wrap_pyfunction!(
-        extract_receive_error_schema_template_ffi,
-        m
-    )?)?;
-    m.add_function(wrap_pyfunction!(
-        extract_receive_param_schema_template_ffi,
-        m
-    )?)?;
-    m.add_function(wrap_pyfunction!(
-        extract_receive_return_value_schema_template_ffi,
-        m
-    )?)?;
-    m.add_function(wrap_pyfunction!(extract_event_schema_template_ffi, m)?)?;
-    m.add_function(wrap_pyfunction!(parse_event_ffi, m)?)?;
-    m.add_function(wrap_pyfunction!(parse_return_value_ffi, m)?)?;
-    m.add_function(wrap_pyfunction!(parse_parameter_ffi, m)?)?;
+fn ccdexplorer_schema_parser(_py: Python, m: &Bound<PyModule>) -> PyResult<()> {
+    m.add_function(pyo3::wrap_pyfunction!(extract_schema_ffi, m)?)?;
+    m.add_function(pyo3::wrap_pyfunction!(extract_schema_pair_ffi, m)?)?;
+    m.add_function(pyo3::wrap_pyfunction!(extract_schema_template_ffi, m)?)?;
+    m.add_function(pyo3::wrap_pyfunction!(extract_event_schema_template_ffi, m)?)?;
+    m.add_function(pyo3::wrap_pyfunction!(extract_init_error_schema_template_ffi, m)?)?;
+    m.add_function(pyo3::wrap_pyfunction!(extract_init_param_schema_template_ffi, m)?)?;
+    m.add_function(pyo3::wrap_pyfunction!(extract_receive_error_schema_template_ffi, m)?)?;
+    m.add_function(pyo3::wrap_pyfunction!(extract_receive_param_schema_template_ffi, m)?)?;
+    m.add_function(pyo3::wrap_pyfunction!(extract_receive_return_value_schema_template_ffi, m)?)?;
+    // m.add_function(pyo3::wrap_pyfunction!(extract_event_schema_template_ffi, m)?)?; // ← duplicate, remove
+    m.add_function(pyo3::wrap_pyfunction!(parse_event_ffi, m)?)?;
+    m.add_function(pyo3::wrap_pyfunction!(parse_return_value_ffi, m)?)?;
+    m.add_function(pyo3::wrap_pyfunction!(parse_parameter_ffi, m)?)?;
     Ok(())
 }
 
